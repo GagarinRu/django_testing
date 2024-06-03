@@ -22,7 +22,7 @@ class TestNotesPage(TestCase):
             author=cls.author,
         )
 
-    def test_Notes_List(self):
+    def test_notes_list(self):
         users_statuses = (
             (self.author, True),
             (self.reader, False),
