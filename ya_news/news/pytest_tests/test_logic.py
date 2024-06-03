@@ -40,7 +40,7 @@ def test_other_user_cant_edit_news(
         author,
         form_data,
         comment
-    ):
+):
     url = reverse('news:edit', args=(comment.id,))
     response = not_author_client.post(url, form_data)
     assert response.status_code == HTTPStatus.NOT_FOUND
