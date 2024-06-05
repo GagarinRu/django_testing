@@ -1,39 +1,39 @@
-import pytest
-
-from django.test.client import Client
-from django.conf import settings
 from datetime import datetime, timedelta
-from django.utils import timezone
+
+from _pytest.fixtures import fixture
+from django.conf import settings
+from django.test.client import Client
+from django.urls import reverse
 
 
 from news.models import Comment, News
 
 
-@pytest.fixture
+@fixture
 def author(django_user_model):
     return django_user_model.objects.create(username='Автор')
 
 
-@pytest.fixture
+@fixture
 def not_author(django_user_model):
     return django_user_model.objects.create(username='Не автор')
 
 
-@pytest.fixture
+@fixture
 def author_client(author):
     client = Client()
     client.force_login(author)
     return client
 
 
-@pytest.fixture
+@fixture
 def not_author_client(not_author):
     client = Client()
     client.force_login(not_author)
     return client
 
 
-@pytest.fixture
+@fixture
 def news():
     news = News.objects.create(
         title='Заголовок',
@@ -42,7 +42,7 @@ def news():
     return news
 
 
-@pytest.fixture
+@fixture
 def comment(author, news):
     comment = Comment.objects.create(
         news=news,
@@ -52,12 +52,12 @@ def comment(author, news):
     return comment
 
 
-@pytest.fixture
+@fixture
 def pk_for_args(news):
     return (news.id,)
 
 
-@pytest.fixture
+@fixture
 def news_list():
     today = datetime.today()
     return News.objects.bulk_create(
@@ -70,22 +70,53 @@ def news_list():
     )
 
 
-@pytest.fixture
+@fixture
 def comments_list(author, news):
-    now = timezone.now()
     for index in range(10):
-        comment = Comment.objects.create(
+        Comment.objects.create(
             news=news,
             author=author,
             text=f'Tекст {index}',
         )
-    comment.created = now + timedelta(days=index)
-    comment.save()
-    return comment
 
 
-@pytest.fixture
+@fixture
 def form_data():
     return {
         'text': 'Новый текст',
     }
+
+
+@fixture
+def home_url():
+    return reverse('news:home')
+
+
+@fixture
+def detail_url(news):
+    return reverse('news:detail', args=(news.id,))
+
+
+@fixture
+def edit_url(comment):
+    return reverse('news:edit', args=(comment.id,))
+
+
+@fixture
+def delete_url(comment):
+    return reverse('news:delete', args=(comment.id,))
+
+
+@fixture
+def login_url():
+    return reverse('users:login')
+
+
+@fixture
+def logout_url():
+    return reverse('users:logout')
+
+
+@fixture
+def signup_url():
+    return reverse('users:signup')
