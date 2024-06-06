@@ -7,31 +7,27 @@ User = get_user_model()
 
 
 class TestNotesPage(ConstantClass):
-    """Отдельная заметка передаётся на страницу со списком заметок."""
-
     def test_notes_list_for_author(self):
+        """Отдельная заметка передаётся на страницу со списком заметок."""
         response = self.author_client.get(self.LIST_URL)
         object_list = response.context['object_list']
-        self.assertEqual(object_list.first().title, self.NOTE_TITLE)
-        self.assertEqual(object_list.first().text, self.NOTE_TEXT)
-        self.assertEqual(object_list.first().author, self.author)
-        self.assertEqual(object_list.first().slug, self.NOTE_SLUG)
-
-    """В список заметок одного пользователя не попадают
-    заметки другого пользователя."""
+        respone = object_list.first()
+        self.assertEqual(respone.title, self.note.title)
+        self.assertEqual(respone.text, self.note.text)
+        self.assertEqual(respone.author, self.note.author)
+        self.assertEqual(respone.slug, self.note.slug)
 
     def test_notes_list_for_reader(self):
+        """Список заметок для разных пользователей."""
         response = self.reader_client.get(self.LIST_URL)
         self.assertEqual(response.context['object_list'].count(), 0)
-
-    """Проверка, что на страницы создания и
-    редактированиязаметки передаются формы."""
 
     def test_authorized_client_has_form(self):
         urls = (
             self.EDIT_URL,
             self.ADD_URL,
         )
+        """Страницы создания и редактированиязаметки передаются формы."""
         for url in urls:
             response = self.author_client.get(url)
             self.assertIn('form', response.context)

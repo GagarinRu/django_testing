@@ -1,4 +1,3 @@
-from http import HTTPStatus
 from django.contrib.auth import get_user_model
 from django.test import Client, TestCase
 from django.urls import reverse
@@ -46,14 +45,14 @@ class ConstantClass(TestCase):
             'text': cls.DATA_TEXT,
         }
         cls.urls = (
-            (cls.ADD_URL, HTTPStatus.OK, HTTPStatus.FOUND),
-            (cls.EDIT_URL, HTTPStatus.NOT_FOUND, HTTPStatus.FOUND),
-            (cls.DETAIL_URL, HTTPStatus.NOT_FOUND, HTTPStatus.FOUND),
-            (cls.DELETE_URL, HTTPStatus.NOT_FOUND, HTTPStatus.FOUND),
-            (cls.LIST_URL, HTTPStatus.OK, HTTPStatus.FOUND),
-            (cls.SUCCESS_URL, HTTPStatus.OK, HTTPStatus.FOUND),
-            (cls.LOGIN_URL, HTTPStatus.OK, HTTPStatus.OK),
-            (cls.LOGOUT_URL, HTTPStatus.OK, HTTPStatus.OK),
-            (cls.SIGNUP_URL, HTTPStatus.OK, HTTPStatus.OK),
-            (cls.HOME_URL, HTTPStatus.OK, HTTPStatus.OK),
+            cls.EDIT_URL,
+            cls.DETAIL_URL,
+            cls.DELETE_URL,
+            cls.ADD_URL,
+            cls.LIST_URL,
+            cls.SUCCESS_URL,
+            cls.LOGIN_URL,
+            cls.LOGOUT_URL,
+            cls.SIGNUP_URL,
+            cls.HOME_URL,
         )

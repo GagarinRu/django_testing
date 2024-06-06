@@ -5,55 +5,66 @@ from pytest_lazyfixture import lazy_fixture
 from pytest_django.asserts import assertRedirects
 
 
-"""Доступность страниц для различных пользователей."""
+HOME_URL = lazy_fixture('home_url')
+DETAIL_URL = lazy_fixture('detail_url')
+EDIT_URL = lazy_fixture('edit_url')
+DELETE_URL = lazy_fixture('delete_url')
+LOGIN_URL = lazy_fixture('login_url')
+LOGOUT_URL = lazy_fixture('logout_url')
+SIGNUP_URL = lazy_fixture('signup_url')
+
+
+AUTHOR_CLIENT = lazy_fixture('author_client')
+CLIENT = lazy_fixture('client')
+NOT_AUTHOR_CLIENT = lazy_fixture('not_author_client')
 
 
 @mark.parametrize(
     'url, parametrized_client, expected_status',
     (
         (
-            lazy_fixture('home_url'),
-            lazy_fixture('client'),
+            HOME_URL,
+            CLIENT,
             HTTPStatus.OK
         ),
         (
-            lazy_fixture('detail_url'),
-            lazy_fixture('client'),
+            DETAIL_URL,
+            CLIENT,
             HTTPStatus.OK
         ),
         (
-            lazy_fixture('edit_url'),
-            lazy_fixture('not_author_client'),
+            EDIT_URL,
+            NOT_AUTHOR_CLIENT,
             HTTPStatus.NOT_FOUND
         ),
         (
-            lazy_fixture('delete_url'),
-            lazy_fixture('not_author_client'),
+            DELETE_URL,
+            NOT_AUTHOR_CLIENT,
             HTTPStatus.NOT_FOUND
         ),
         (
-            lazy_fixture('edit_url'),
-            lazy_fixture('author_client'),
+            EDIT_URL,
+            AUTHOR_CLIENT,
             HTTPStatus.OK
         ),
         (
-            lazy_fixture('delete_url'),
-            lazy_fixture('author_client'),
+            DELETE_URL,
+            AUTHOR_CLIENT,
             HTTPStatus.OK
         ),
         (
-            lazy_fixture('login_url'),
-            lazy_fixture('client'),
+            LOGIN_URL,
+            CLIENT,
             HTTPStatus.OK
         ),
         (
-            lazy_fixture('logout_url'),
-            lazy_fixture('client'),
+            LOGOUT_URL,
+            CLIENT,
             HTTPStatus.OK
         ),
         (
-            lazy_fixture('signup_url'),
-            lazy_fixture('client'),
+            SIGNUP_URL,
+            CLIENT,
             HTTPStatus.OK
         ),
     )
@@ -64,17 +75,14 @@ def test_pages_availability_for_anonymous_user(
     url,
     expected_status
 ):
+    """Доступность страниц для различных пользователей."""
     assert parametrized_client.get(url).status_code == expected_status
-
-
-"""При попытке перейти на страницу редактирования или
-удаления комментария анонимный пользователь перенаправляется
-на страницу авторизации."""
 
 
 @mark.parametrize(
     'url',
-    (lazy_fixture('delete_url'), lazy_fixture('delete_url')),
+    (EDIT_URL, DELETE_URL),
 )
 def test_redirects(client, login_url, url):
+    """Доступность EDIT_URL и DELETE_URLдля анонимный пользователя."""
     assertRedirects(client.get(url), f'{login_url}?next={url}')

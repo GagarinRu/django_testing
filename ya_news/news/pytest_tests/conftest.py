@@ -5,7 +5,6 @@ from django.conf import settings
 from django.test.client import Client
 from django.urls import reverse
 
-
 from news.models import Comment, News
 
 

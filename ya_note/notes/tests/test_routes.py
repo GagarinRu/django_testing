@@ -4,37 +4,49 @@ from .constants import ConstantClass
 
 
 class TestRoutes(ConstantClass):
-    """Доступность страниц для аутентифицированного пользователя."""
-
     def test_pages_availability_for_author(self):
-        for url, reader_status, anonymous_status in self.urls:
-            with self.subTest(url=url):
+        """Доступность страниц для аутентифицированного автора."""
+        for url in self.urls:
+            self.assertEqual(
+                self.author_client.get(url).status_code,
+                HTTPStatus.OK
+            )
+
+    def test_pages_availability_for_reader(self):
+        """Доступность страниц для другого пользователя."""
+        urls_not_found = (
+            self.DETAIL_URL,
+            self.EDIT_URL,
+            self.DELETE_URL,
+        )
+        for url in self.urls:
+            if url in urls_not_found:
                 self.assertEqual(
-                    self.author_client.get(url).status_code,
+                    self.reader_client.get(url).status_code,
+                    HTTPStatus.NOT_FOUND
+                )
+            else:
+                self.assertEqual(
+                    self.reader_client.get(url).status_code,
                     HTTPStatus.OK
                 )
 
-    """Доступность страниц для другого пользователя."""
-
-    def test_pages_availability_for_reader(self):
-        for url, reader_status, anonymous_status in self.urls:
-            with self.subTest(url=url):
-                self.assertEqual(
-                    self.reader_client.get(url).status_code,
-                    reader_status
-                )
-
-    """Доступность страниц для другого анонимного пользователя."""
-
     def test_pages_availability_for_anonymous_client(self):
-        for url, reader_status, anonymous_status in self.urls:
-            with self.subTest(url=url):
+        """Доступность страниц для другого анонимного пользователя."""
+        urls_ok = (
+            self.LOGIN_URL,
+            self.LOGOUT_URL,
+            self.SIGNUP_URL,
+            self.HOME_URL,
+        )
+
+        for url in self.urls:
+            if url in urls_ok:
                 self.assertEqual(
                     self.client.get(url).status_code,
-                    anonymous_status
+                    HTTPStatus.OK
                 )
-        for url, reader_status, anonymous_status in self.urls[:6]:
-            with self.subTest(url=url):
+            else:
                 self.assertRedirects(
                     self.client.get(url),
                     f'{self.LOGIN_URL}?next={url}'
